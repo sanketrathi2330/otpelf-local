@@ -23,11 +23,14 @@ func (h NetbankingRetailHdfcHandler) Do(ctx context.Context) error {
 	return chromedp.SendKeys(`//input[@name="fldOtpToken"]`, otpInfo.Otp).Do(ctx)
 }
 
-func (h *NetbankingRetailHdfcHandler) AutomateNetbankingRetailHdfcOTPSubmission(request request.NetbankingHdfc) chromedp.Tasks {
-	var shot1, shot2, shot3, shot4, shot5, shot6, shot7, shot8 *[]byte
+func (h *NetbankingRetailHdfcHandler) Run(ctx context.Context, request request.NetbankingHdfc) error {
+	var shot1, shot2, shot3, shot4, shot5, shot6, shot7, shot8 []byte
+	err := chromedp.Run(ctx, automateNetbankingRetailHdfcOTPSubmission(request, &shot1, &shot2, &shot3, &shot4, &shot5, &shot6, &shot7, &shot8))
+	writeScreenShotsToFiles(shot1, shot2, shot3, shot4, shot5, shot6, shot7, shot8)
+	return err
+}
 
-	defer writeScreenShotsToFiles(*shot1, *shot2, *shot3, *shot4, *shot5, *shot6, *shot7, *shot8)
-
+func automateNetbankingRetailHdfcOTPSubmission(request request.NetbankingHdfc, shot1, shot2, shot3, shot4, shot5, shot6, shot7, shot8 *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.Navigate(request.AuthUrl),
 		chromedp.FullScreenshot(shot1, 90),
@@ -55,10 +58,11 @@ func (h *NetbankingRetailHdfcHandler) AutomateNetbankingRetailHdfcOTPSubmission(
 }
 
 func writeScreenShotsToFiles(shots ...[]byte) {
-	i := 0
+	i := 1
 	for _, s := range shots {
 		if err1 := ioutil.WriteFile("screenshots/shot"+strconv.Itoa(i)+".png", s, 0o644); err1 != nil {
 			fmt.Print("write error")
 		}
+		i++
 	}
 }

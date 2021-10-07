@@ -29,7 +29,8 @@ func (Processor) Process(ctx *gin.Context) {
 
 	// run task list
 	h := handler.NetbankingRetailHdfcHandler{}
-	err := chromedp.Run(timeoutContext, h.AutomateNetbankingRetailHdfcOTPSubmission(request))
+	err := h.Run(timeoutContext, request)
+
 	if err != nil {
 		fmt.Print("chromdp error", err)
 	}
