@@ -12,7 +12,7 @@ import (
 )
 
 type NetbankingRetailHdfcHandler struct {
-	Timestamp  int64
+	Timestamp int64
 }
 
 func (h NetbankingRetailHdfcHandler) Do(ctx context.Context) error {
@@ -21,7 +21,7 @@ func (h NetbankingRetailHdfcHandler) Do(ctx context.Context) error {
 
 	otpInfo, _ := apiService.FetchOtp(&ctx, &request.OtpRequest{Timestamp: h.Timestamp})
 
-	return chromedp.SendKeys(`//input[@name="fldOtpToken"]`, otpInfo.Otp).Do(ctx)
+	return chromedp.SendKeys(`//input[@name="fldOtpToken"]`, otpInfo[0].Secrets.Otp).Do(ctx)
 }
 
 func (h *NetbankingRetailHdfcHandler) Run(ctx context.Context, request request.NetbankingHdfc) error {

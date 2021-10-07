@@ -26,7 +26,7 @@ type Response struct {
 
 type IApi interface {
 	ExecuteRequest(ctx *context.Context, url string, method string, request interface{}) (*Response, error)
-	FetchOtp(ctx *context.Context, request *request.OtpRequest) (*response.OtpInfo, error)
+	FetchOtp(ctx *context.Context, request *request.OtpRequest) ([]response.OtpInfo, error)
 }
 
 func NewRequest(ctx *context.Context, method string, url string, payload io.Reader, headers map[string]string) (*http.Request, error) {
@@ -63,9 +63,11 @@ func (s *service) ExecuteRequest(ctx *context.Context, url string, method string
 		return nil, err
 	}
 
+	completeUrl := "https://api-dark.razorpay.com/v1" + url
+
 	httpReq, err := NewRequest(ctx,
 		method,
-		url,
+		completeUrl,
 		strings.NewReader(string(reqJSON)),
 		nil)
 
@@ -92,10 +94,10 @@ func (s *service) ExecuteRequest(ctx *context.Context, url string, method string
 	return &Response{Code: response.StatusCode, Body: body}, nil
 }
 
-func (s *service) FetchOtp(ctx *context.Context, request *request.OtpRequest) (*response.OtpInfo, error) {
-	info := response.OtpInfo{}
+func (s *service) FetchOtp(ctx *context.Context, request *request.OtpRequest) ([]response.OtpInfo, error) {
+	info := []response.OtpInfo{}
 
-	resp, err := s.ExecuteRequest(ctx, "", "GET", request)
+	resp, err := s.ExecuteRequest(ctx, "/terminal_test_otp", "GET", request)
 
 	if err != nil {
 		return nil, err
@@ -103,5 +105,5 @@ func (s *service) FetchOtp(ctx *context.Context, request *request.OtpRequest) (*
 
 	json.Unmarshal(resp.Body, &info)
 
-	return &info, nil
+	return info, nil
 }
