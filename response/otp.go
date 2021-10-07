@@ -1,10 +1,9 @@
 package response
 
 type OtpInfo struct {
-	Secrets OtpSecrets `json:"secrets"`
+	Otp string `json:"otp"`
 }
 
-type OtpSecrets struct {
+type OtpWebhookResponse struct {
 	Otp string `json:"otp"`
-	Raw string `json:"raw"`
 }
