@@ -12,13 +12,14 @@ import (
 )
 
 type NetbankingRetailHdfcHandler struct {
+	Timestamp  int64
 }
 
 func (h NetbankingRetailHdfcHandler) Do(ctx context.Context) error {
 
 	apiService := external.NewApiService()
 
-	otpInfo, _ := apiService.FetchOtp(&ctx, &request.OtpRequest{})
+	otpInfo, _ := apiService.FetchOtp(&ctx, &request.OtpRequest{Timestamp: h.Timestamp})
 
 	return chromedp.SendKeys(`//input[@name="fldOtpToken"]`, otpInfo.Otp).Do(ctx)
 }
@@ -51,7 +52,7 @@ func automateNetbankingRetailHdfcOTPSubmission(request request.NetbankingHdfc, s
 		chromedp.WaitVisible(`//input[@name="fldOtpToken"]`),
 		chromedp.FullScreenshot(shot7, 90),
 		chromedp.Sleep(30 * time.Second),
-		NetbankingRetailHdfcHandler{},
+		NetbankingRetailHdfcHandler{Timestamp: request.Timestamp},
 		chromedp.FullScreenshot(shot8, 90),
 		chromedp.Click(`//img[@alt="Submit"]`),
 	}
